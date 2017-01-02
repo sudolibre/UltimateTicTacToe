@@ -11,6 +11,12 @@
 		E8ED844D1E16DD3C00528558 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8ED844C1E16DD3C00528558 /* Assets.xcassets */; };
 		E8ED84501E16DD3D00528558 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E8ED844E1E16DD3D00528558 /* MainMenu.xib */; };
 		E8ED845B1E16DD3D00528558 /* Ultimate_TicTacToeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8ED845A1E16DD3D00528558 /* Ultimate_TicTacToeTests.swift */; };
+		E8ED84681E16DD7B00528558 /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8ED84661E16DD7B00528558 /* Board.swift */; };
+		E8ED846A1E16DDB800528558 /* SmallTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8ED84691E16DDB800528558 /* SmallTypes.swift */; };
+		E8ED846C1E16DE9500528558 /* MetaBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8ED846B1E16DE9500528558 /* MetaBoard.swift */; };
+		E8ED846E1E16F60C00528558 /* script.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8ED846D1E16F60C00528558 /* script.swift */; };
+		E8F980F91E19863D00ED2618 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F980F81E19863D00ED2618 /* main.swift */; };
+		E8F980FB1E19868700ED2618 /* TestingAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F980FA1E19868700ED2618 /* TestingAppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +38,12 @@
 		E8ED84561E16DD3D00528558 /* Ultimate_TicTacToeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Ultimate_TicTacToeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8ED845A1E16DD3D00528558 /* Ultimate_TicTacToeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ultimate_TicTacToeTests.swift; sourceTree = "<group>"; };
 		E8ED845C1E16DD3D00528558 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E8ED84661E16DD7B00528558 /* Board.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
+		E8ED84691E16DDB800528558 /* SmallTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmallTypes.swift; sourceTree = "<group>"; };
+		E8ED846B1E16DE9500528558 /* MetaBoard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetaBoard.swift; sourceTree = "<group>"; };
+		E8ED846D1E16F60C00528558 /* script.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = script.swift; sourceTree = "<group>"; };
+		E8F980F81E19863D00ED2618 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		E8F980FA1E19868700ED2618 /* TestingAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestingAppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +86,12 @@
 			isa = PBXGroup;
 			children = (
 				E8ED844A1E16DD3C00528558 /* AppDelegate.swift */,
+				E8F980F81E19863D00ED2618 /* main.swift */,
+				E8F980FA1E19868700ED2618 /* TestingAppDelegate.swift */,
+				E8ED846D1E16F60C00528558 /* script.swift */,
+				E8ED84691E16DDB800528558 /* SmallTypes.swift */,
+				E8ED84661E16DD7B00528558 /* Board.swift */,
+				E8ED846B1E16DE9500528558 /* MetaBoard.swift */,
 				E8ED844C1E16DD3C00528558 /* Assets.xcassets */,
 				E8ED844E1E16DD3D00528558 /* MainMenu.xib */,
 				E8ED84511E16DD3D00528558 /* Info.plist */,
@@ -192,7 +210,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8F980FB1E19868700ED2618 /* TestingAppDelegate.swift in Sources */,
+				E8ED846E1E16F60C00528558 /* script.swift in Sources */,
+				E8ED846A1E16DDB800528558 /* SmallTypes.swift in Sources */,
+				E8F980F91E19863D00ED2618 /* main.swift in Sources */,
+				E8ED846C1E16DE9500528558 /* MetaBoard.swift in Sources */,
 				E8ED844B1E16DD3C00528558 /* AppDelegate.swift in Sources */,
+				E8ED84681E16DD7B00528558 /* Board.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,6 +415,7 @@
 				E8ED84611E16DD3D00528558 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E8ED84621E16DD3D00528558 /* Build configuration list for PBXNativeTarget "Ultimate_TicTacToeTests" */ = {
 			isa = XCConfigurationList;
@@ -399,6 +424,7 @@
 				E8ED84641E16DD3D00528558 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -8,103 +8,59 @@
 
 import Foundation
 
-struct Board: CustomStringConvertible {
-    var playerX: Player
-    var playerO: Player
+struct Board: CustomStringConvertible, Equatable {
+    private(set) var places: [Place: Marker]
+    private(set) var boardProgressStatus: BoardStatus = .inProgress
+    private(set) var lastPlace: Place?
     
-    var currentState: [Place: Marker]
+    var available: Bool {
+        return boardProgressStatus == .inProgress
+    }
     
     var availablePlaces: [Place] {
         var availablePlaces = [Place]()
         
-        for i in currentState {
-            if i.value == .empty {
+        for i in places {
+            if i.value.available == true {
                 availablePlaces.append(i.key)
             }
         }
         return availablePlaces
     }
     
-    enum Marker: String {
-        case x = "X", o = "O", empty = " "
-    }
+    var tl: String { return places[Place(row: .top, column: .left)]!.rawValue }
+    var tm: String { return places[Place(row: .top, column: .middle)]!.rawValue }
+    var tr: String { return places[Place(row: .top, column: .right)]!.rawValue }
+    var ml: String { return places[Place(row: .middle, column: .left)]!.rawValue }
+    var mm: String { return places[Place(row: .middle, column: .middle)]!.rawValue }
+    var mr: String { return places[Place(row: .middle, column: .right)]!.rawValue }
+    var bl: String { return places[Place(row: .bottom, column: .left)]!.rawValue }
+    var bm: String { return places[Place(row: .bottom, column: .middle)]!.rawValue }
+    var br: String { return places[Place(row: .bottom, column: .right)]!.rawValue }
+
+    let nl = "\n"
+    let seperator = "----------"
     
-    enum Column: Int {
-       case left = 1, middle = 2, right = 3
-    }
-    
-    enum Row: Int {
-        case top = 4, middle = 5, bottom = 6
-    }
-    
+    let line0 = "CURRENT BOARD"
+    var line1: String { return "\(tl) | \(tm) | \(tr)" }
+    var line2: String { return "\(ml) | \(mm) | \(mr)" }
+    var line3: String { return "\(bl) | \(bm) | \(br)" }
+
     var description: String {
-        let tl = currentState[Place(row: .top, column: .left)]!.rawValue
-        let tm = currentState[Place(row: .top, column: .middle)]!.rawValue
-        let tr = currentState[Place(row: .top, column: .right)]!.rawValue
-        let ml = currentState[Place(row: .middle, column: .left)]!.rawValue
-        let mm = currentState[Place(row: .middle, column: .middle)]!.rawValue
-        let mr = currentState[Place(row: .middle, column: .right)]!.rawValue
-        let bl = currentState[Place(row: .bottom, column: .left)]!.rawValue
-        let bm = currentState[Place(row: .bottom, column: .middle)]!.rawValue
-        let br = currentState[Place(row: .bottom, column: .right)]!.rawValue
-        
-        let line1 = "\(tl) | \(tm) | \(tr)\n"
-        let line2 = "----------\n"
-        let line3 = "\(ml) | \(mm) | \(mr)\n"
-        let line4 = "----------\n"
-        let line5 = "\(bl) | \(bm) | \(br)\n"
-        
-        return line1 + line2 + line3 + line4 + line5
+            return nl + line0 + nl + line1 + nl + seperator + nl + line2 + nl + seperator + nl + line3 + nl
 
     }
 
-    
-    struct Place: Hashable {
-        let row: Row
-        let column: Column
-        
-        var description: String {
-            var textDescription = ""
-            switch self.row {
-            case .top:
-                textDescription += "Top "
-            case .middle:
-                textDescription += "Middle "
-            case .bottom:
-                textDescription += "Bottom "
-            }
-            
-            switch self.column {
-            case .left:
-                textDescription += "Left"
-            case .middle:
-                textDescription += "Middle"
-            case .right:
-                textDescription += "Right"
-            }
-            
-            return textDescription
-        }
-        
-        var hashValue: Int {
-            return row.hashValue ^ column.hashValue
-        }
-        
-        static func ==(_ lhs: Place, _ rhs: Place) -> Bool {
-            return lhs.row == rhs.row && lhs.column == rhs.column
-        }
-    }
     
     mutating func placeMarker(_ marker: Marker, onPlace place: Place ) {
-        currentState[place] = marker
+        places[place] = marker
+        checkForWinningCombinations(marker: marker)
+        lastPlace = place
     }
     
     
-    var gameWon: Bool {
-        return hasWinningCombinations(marker: .x) || hasWinningCombinations(marker: .o)
-    }
     
-    func hasWinningCombinations(marker: Marker) -> Bool {
+    fileprivate mutating func checkForWinningCombinations(marker: Marker) {
         var topRows = 0
         var middleRows = 0
         var bottomRows = 0
@@ -114,7 +70,7 @@ struct Board: CustomStringConvertible {
         var diagonalRight = 0
         var diagnoalLeft = 0
         
-        for i in currentState where i.value == marker {
+        for i in places where i.value == marker {
             switch i.key.column  {
             case .right:
                 rightColumns += 1
@@ -150,13 +106,21 @@ struct Board: CustomStringConvertible {
             }
         }
         
-        return topRows == 3 || middleRows == 3 || bottomRows == 3 || leftColumns == 3 || middleColumns == 3 || rightColumns == 3 || diagnoalLeft == 3 || diagonalRight == 3
+        if topRows == 3 || middleRows == 3 || bottomRows == 3 || leftColumns == 3 || middleColumns == 3 || rightColumns == 3 || diagnoalLeft == 3 || diagonalRight == 3 {
+            boardProgressStatus = .winner(marker)
+        }
+        
+        if availablePlaces.count == 0 {
+            boardProgressStatus = .draw
+        }
     }
     
-    init(playerX: Player, playerO: Player) {
-        self.playerX = playerX
-        self.playerO = playerO
-        self.currentState = [
+    static func ==(lhs: Board, rhs: Board) -> Bool {
+        return lhs.places == rhs.places
+    }
+    
+    init() {
+        self.places = [
             Place(row: .top, column: .left): .empty,
             Place(row: .top, column: .middle) : .empty,
             Place(row: .top, column: .right) : .empty,
@@ -168,15 +132,12 @@ struct Board: CustomStringConvertible {
             Place(row: .bottom, column: .right) : .empty
         ]
     }
-
-}
-
-extension Board {
     
-    init(savedState: [Place: Marker], players: [Player]) {
-        currentState = savedState
-        playerX = players[0]
-        playerO = players[1]
+    init(savedState: [Place: Marker]) {
+        places = savedState
+        checkForWinningCombinations(marker: .x)
+        checkForWinningCombinations(marker: .o)
     }
+
 }
 

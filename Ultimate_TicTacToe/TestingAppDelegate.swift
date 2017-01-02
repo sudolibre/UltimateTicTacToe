@@ -6,4 +6,8 @@
 //  Copyright © 2017 dayj. All rights reserved.
 //
 
-import Foundation
+import Cocoa
+
+class TestingAppDelegate: NSObject, NSApplicationDelegate {
+    @IBOutlet weak var window: NSWindow!
+}

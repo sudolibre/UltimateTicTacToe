@@ -22,9 +22,9 @@ func mainLoop() {
     while usersPlayingGame == true {
         // X plays a turn
         print(metaBoard.overviewDescription + "\n" + metaBoard.detailedDescription)
-        print(metaBoard.currentState[metaBoard.currentBoardPlace!]!.description)
-        let boardAfterplayerXTurn = playTurn(onBoard: metaBoard.currentState[metaBoard.currentBoardPlace!]!, marker: Marker.x)
-        metaBoard.currentState[metaBoard.currentBoardPlace!]! = boardAfterplayerXTurn
+        print(metaBoard.places[metaBoard.currentBoardPlace!]!.description)
+        let boardAfterplayerXTurn = playTurn(onBoard: metaBoard.places[metaBoard.currentBoardPlace!]!, marker: Marker.x)
+        metaBoard.places[metaBoard.currentBoardPlace!]! = boardAfterplayerXTurn
         metaBoard.currentBoardPlace = boardAfterplayerXTurn.lastPlace
         
         //Check if X won the board and metaboard
@@ -37,7 +37,7 @@ func mainLoop() {
         
         //O chooses a board if neccesary
         
-        switch metaBoard.currentState[metaBoard.currentBoardPlace!]!.boardProgressStatus {
+        switch metaBoard.places[metaBoard.currentBoardPlace!]!.boardProgressStatus {
         case .winner, .draw:
             print(metaBoard.overviewDescription + "\n" + metaBoard.detailedDescription)
             let availablePlaces = metaBoard.availablePlaces
@@ -50,9 +50,9 @@ func mainLoop() {
         
         // O plays a turn
         print(metaBoard.overviewDescription + "\n" + metaBoard.detailedDescription)
-        print(metaBoard.currentState[metaBoard.currentBoardPlace!]!.description)
-        let boardAfterplayerOTurn = playTurn(onBoard: metaBoard.currentState[metaBoard.currentBoardPlace!]!, marker: Marker.o)
-        metaBoard.currentState[metaBoard.currentBoardPlace!]! = boardAfterplayerOTurn
+        print(metaBoard.places[metaBoard.currentBoardPlace!]!.description)
+        let boardAfterplayerOTurn = playTurn(onBoard: metaBoard.places[metaBoard.currentBoardPlace!]!, marker: Marker.o)
+        metaBoard.places[metaBoard.currentBoardPlace!]! = boardAfterplayerOTurn
         metaBoard.currentBoardPlace = boardAfterplayerOTurn.lastPlace
         
         //Check if O won the board and metaboard
@@ -65,11 +65,11 @@ func mainLoop() {
         }
         
         // X chooses a board if neccesary
-        switch metaBoard.currentState[metaBoard.currentBoardPlace!]!.boardProgressStatus {
+        switch metaBoard.places[metaBoard.currentBoardPlace!]!.boardProgressStatus {
         case .winner, .draw:
             print(metaBoard.overviewDescription + "\n" + metaBoard.detailedDescription)
             let availablePlaces = metaBoard.availablePlaces
-            let nextBoardPlace = availablePlaces[answerToQuestion("Player O please choose a new board to play next", withPossibleAnswers: availablePlaces.map { $0.description })]
+            let nextBoardPlace = availablePlaces[answerToQuestion("Player X please choose a new board to play next", withPossibleAnswers: availablePlaces.map { $0.description })]
             metaBoard.currentBoardPlace = nextBoardPlace
         case .inProgress:
             break
@@ -113,7 +113,7 @@ func playTurn(onBoard board: Board, marker: Marker) -> Board {
     var newBoard = board
     let availablePlaces = newBoard.availablePlaces
     let indexForMoveOfPlayer = answerToQuestion("Player \(marker.rawValue) please choose the next place you would like mark on the CURRENT BOARD", withPossibleAnswers: availablePlaces.map { $0.description })
-    newBoard.placeMarker(.x, onPlace: availablePlaces[indexForMoveOfPlayer])
+    newBoard.placeMarker(marker, onPlace: availablePlaces[indexForMoveOfPlayer])
     print(board)
     return newBoard
 }
@@ -131,7 +131,7 @@ func setupMetaBoard() -> MetaBoard {
 func answerToQuestion(_ question: String, withPossibleAnswers possibleAnswers: [String]) -> Int {
     print(question)
     var intAnswer: Int?
-    let selection = possibleAnswers.sorted().enumerated()
+    let selection = possibleAnswers.enumerated()
     for i in selection {
         print("\(i.offset) - \(i.element)")
     }
