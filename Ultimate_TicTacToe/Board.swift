@@ -22,87 +22,70 @@ struct Board<T: Ownable>: Ownable {
         lastPlay = (place, value)
     }
     
+
     var owner: Marker? {
-        //TODO: major code duplication here
-        var topRowsX = 0,
-        topRowsO = 0,
-        middleRowsX = 0,
-        middleRowsO = 0,
-        bottomRowsX = 0,
-        bottomRowsO = 0,
-        leftColumnsX = 0,
-        leftColumnsO = 0,
-        middleColumnsX = 0,
-        middleColumnsO = 0,
-        rightColumnsO = 0,
-        rightColumnsX = 0,
-        diagonalRightX = 0,
-        diagonalRightO = 0,
-        diagnoalLeftX = 0,
-        diagnoalLeftO = 0
+        let setForX = NSCountedSet()
+        let setForO = NSCountedSet()
         
         for i in places {
-            switch i.key.column  {
-            case .right:
-                if i.value.owner == .x { rightColumnsX += 1 }
-                if i.value.owner == .o { rightColumnsO += 1 }
-            case .middle:
-                if i.value.owner == .x { middleColumnsX += 1 }
-                if i.value.owner == .o { middleColumnsO += 1 }
-            case .left:
-                if i.value.owner == .x { leftColumnsX += 1 }
-                if i.value.owner == .o { leftColumnsO += 1 }
-            }
-            
-            switch i.key.row {
-            case .bottom:
-                if i.value.owner == .x { bottomRowsX += 1 }
-                if i.value.owner == .o { bottomRowsO += 1 }
-            case .middle:
-                if i.value.owner == .x { middleRowsX += 1 }
-                if i.value.owner == .o { middleRowsO += 1 }
-            case .top:
-                if i.value.owner == .x { topRowsX += 1 }
-                if i.value.owner == .o { topRowsO += 1 }
-            }
-            
+            // check for instances of a diagonal win pattern
             switch (i.key.row, i.key.column) {
             case (.bottom, .left):
-                if i.value.owner == .x { diagnoalLeftX += 1 }
-                if i.value.owner == .o { diagnoalLeftO += 1 }
+                if i.value.owner == .x { setForX.add("diagonalLeft") }
+                if i.value.owner == .o { setForO.add("diagonalLeft") }
             case (.middle,.middle):
-                if i.value.owner == .x { diagnoalLeftX += 1; diagonalRightX += 1 }
-                if i.value.owner == .o { diagnoalLeftO += 1; diagonalRightO += 1 }
+                if i.value.owner == .x { setForX.add("diagonalLeft"); setForX.add("diagonalRight")  }
+                if i.value.owner == .o { setForO.add("diagonalLeft"); setForO.add("diagonalRight") }
             case (.top, .right):
-                if i.value.owner == .x { diagnoalLeftX += 1 }
-                if i.value.owner == .o { diagnoalLeftO += 1 }
+                if i.value.owner == .x { setForX.add("diagonalLeft") }
+                if i.value.owner == .o { setForO.add("diagonalLeft") }
             case (.bottom, .right):
-                if i.value.owner == .x { diagonalRightX += 1 }
-                if i.value.owner == .o { diagonalRightO += 1 }
+                if i.value.owner == .x { setForX.add("diagonalRight") }
+                if i.value.owner == .o { setForO.add("diagonalRight") }
             case (.top, .left):
-                if i.value.owner == .x { diagonalRightX += 1 }
-                if i.value.owner == .o { diagonalRightO += 1 }
+                if i.value.owner == .x { setForX.add("diagonalRight") }
+                if i.value.owner == .o { setForO.add("diagonalRight") }
             default:
-                continue
+                break
+            }
+            
+            //add instances of a column or row win pattern
+            switch i.value.owner {
+            case .some(.x):
+                setForX.addObjects(from: [i.key.column, i.key.row])
+            case .some(.o):
+                setForO.addObjects(from: [i.key.column, i.key.row])
+            default:
+                break
             }
         }
         
-        if topRowsX == 3 || middleRowsX == 3 || bottomRowsX == 3 || leftColumnsX == 3 || middleColumnsX == 3 || rightColumnsX == 3 || diagonalRightX == 3 || diagnoalLeftX == 3 {
-            return .x
-        } else if topRowsO == 3 || middleRowsO == 3 || bottomRowsO == 3 || leftColumnsO == 3 || middleColumnsO == 3 || rightColumnsO == 3 || diagonalRightO == 3 || diagnoalLeftO == 3 {
-            return .o
-        } else if availablePlaces.count == 0 {
-            return .empty
-        } else {
-            return nil
+        //if a marker has 3 instances in a win pattern then they own this board
+        let patternCountsForX = setForX.map { setForX.count(for: $0) }
+        let bestPatternCountForX = patternCountsForX.max()
+        let patternCountsForO = setForO.map { setForO.count(for: $0) }
+        let bestPatternCountForO = patternCountsForO.max()
+        
+        if let count = bestPatternCountForX {
+            if count == 3 {
+                return .x
+            }
         }
+        
+        if let count = bestPatternCountForO {
+            if count == 3 {
+                return .o
+            }
+        }
+
+        if availablePlaces.count == 0 {
+            return .empty
+        }
+        
+        return nil
     }
 
-    
-//    static func ==(lhs: Board, rhs: Board) -> Bool {
-//        return lhs.places == rhs.places
-//    }
-    
+
     init() {
         self.places = [
             Place(row: .top, column: .left): T(),
