@@ -16,7 +16,7 @@ let boardStateWonByX: [Place: Marker] = [
     Place(row: .top, column: .middle) : .o,
     Place(row: .top, column: .right) : .x,
     Place(row: .middle, column: .left) : .x,
-    Place(row: .middle, column: .middle) : nil,
+    Place(row: .middle, column: .middle) : .empty,
     Place(row: .middle, column: .right) : .empty,
     Place(row: .bottom, column: .left) : .x,
     Place(row: .bottom, column: .middle) : .empty,

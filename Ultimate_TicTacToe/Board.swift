@@ -14,7 +14,7 @@ struct Board<T: Ownable>: Ownable {
     private(set) var lastPlay: (Place, T)?
     
     var availablePlaces: [Place] {
-        return places.filter { $0.value.owner == nil }.map { $0.key }
+        return places.filter { $0.value.owner == .empty }.map { $0.key }
     }
     
     mutating func updatePlace(_ place: Place, with value: T ) {
@@ -104,19 +104,17 @@ struct Board<T: Ownable>: Ownable {
 //    }
     
     init() {
-        let defaultPlaces: Dictionary<Place, T?> = [
-        Place(row: .top, column: .left): nil,
-        Place(row: .top, column: .middle) : nil,
-        Place(row: .top, column: .right) : nil,
-        Place(row: .middle, column: .left) : nil,
-        Place(row: .middle, column: .middle) : nil,
-        Place(row: .middle, column: .right) : nil,
-        Place(row: .bottom, column: .left) : nil,
-        Place(row: .bottom, column: .middle) : nil,
-        Place(row: .bottom, column: .right) : nil
+        self.places = [
+            Place(row: .top, column: .left): T(),
+            Place(row: .top, column: .middle) : T(),
+            Place(row: .top, column: .right) : T(),
+            Place(row: .middle, column: .left) : T(),
+            Place(row: .middle, column: .middle) : T(),
+            Place(row: .middle, column: .right) : T(),
+            Place(row: .bottom, column: .left) : T(),
+            Place(row: .bottom, column: .middle) : T(),
+            Place(row: .bottom, column: .right) : T()
         ]
-        
-        self.places  = defaultPlaces
     }
     
     init(savedState: [Place: T]) {
