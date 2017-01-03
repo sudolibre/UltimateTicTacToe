@@ -8,23 +8,25 @@
 
 import Foundation
 
-//class Game {
-//    playerXName: String = "Xavier"
-//    playerOName: String = "Oscar"
-//    
-//    var metaBoard = Board<Board>()
-//    
-//    func nextBoard() -> Board? {
-//        // if next board is nil then the user can choose
-//        //TODO: should last place in Board be optional?
-////        if availablePlaces.contains(places[currentBoardPlace!]!.lastPlace!) {
-////            currentBoardPlace = places[currentBoardPlace!]!.lastPlace!
-////            return places[currentBoardPlace!]!
-////        } else {
-////            return nil
-////        }
-//        return nil
-//        
-//    }
-//
-//}
+class Game {
+    let playerXName: String
+    let playerOName: String
+    
+    var metaBoard: Board<Board<Marker>>
+    
+    func nextBoard() -> Optional<Board<Marker>> {
+        // if next board is nil then the user should choose
+        if metaBoard.availablePlaces.contains((metaBoard.lastPlay?.1.lastPlay?.0)!) {
+            return metaBoard.places[(metaBoard.lastPlay?.1.lastPlay?.0)!]!
+        } else {
+            return nil
+        }
+    }
+    
+    init(playerXName: String, playerOName: String) {
+        self.playerOName = playerOName
+        self.playerXName = playerXName
+        metaBoard = Board<Board<Marker>>()
+    }
+    
+}

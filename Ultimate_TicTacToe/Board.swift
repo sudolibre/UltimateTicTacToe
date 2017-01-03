@@ -14,7 +14,7 @@ struct Board<T: Ownable>: Ownable {
     private(set) var lastPlay: (Place, T)?
     
     var availablePlaces: [Place] {
-        return places.filter { $0.value.owner == .empty }.map { $0.key }
+        return places.filter { $0.value.owner == .empty || $0.value.owner == nil }.map { $0.key }
     }
     
     mutating func updatePlace(_ place: Place, with value: T ) {
