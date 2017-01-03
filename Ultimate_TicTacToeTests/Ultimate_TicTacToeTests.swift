@@ -16,13 +16,14 @@ let boardStateWonByX: [Place: Marker] = [
     Place(row: .top, column: .middle) : .o,
     Place(row: .top, column: .right) : .x,
     Place(row: .middle, column: .left) : .x,
-    Place(row: .middle, column: .middle) : .empty,
+    Place(row: .middle, column: .middle) : nil,
     Place(row: .middle, column: .right) : .empty,
     Place(row: .bottom, column: .left) : .x,
     Place(row: .bottom, column: .middle) : .empty,
     Place(row: .bottom, column: .right) : .o,
 ]
-let boardWonByX = Board(savedState: boardStateWonByX)
+
+let boardWonByX = Board<Marker>(savedState: boardStateWonByX)
 
 let metaBoardState = [
     Place(row: .top, column: .left): boardWonByX,
@@ -37,59 +38,94 @@ let metaBoardState = [
 ]
 
 
-let metaBoard = MetaBoard(savedState: metaBoardState, playerX: playerX, playerO: playerO)
+let metaBoard = Board<Board<Marker>>(savedState: metaBoardState)
+
+
 
 class Ultimate_TicTacToeTests: XCTestCase {
-    
-    func testDescriptions() {
-        let expectedBoard = "\nCURRENT BOARD\nX | O | X\n----------\nX |   |  \n----------\nX |   | O\n"
-        let resultingBoard = boardWonByX.description
-        let expectedMetaBoardDetailed = "\n META BOARD Detailed \n\nX | O | X  ||    |   |    ||    |   |  \n---------- ||  ---------- ||  ----------\nX |   |    ||    |   |    ||    |   |  \n---------- ||  ---------- ||  ----------\nX |   | O  ||    |   |    ||    |   |  \n_________________________________________\n-----------------------------------------\n  |   |    ||    |   |    ||    |   |  \n---------- ||  ---------- ||  ----------\n  |   |    ||    |   |    ||    |   |  \n---------- ||  ---------- ||  ----------\n  |   |    ||    |   |    ||    |   |  \n_________________________________________\n-----------------------------------------\n  |   |    ||    |   |    ||    |   |  \n---------- ||  ---------- ||  ----------\n  |   |    ||    |   |    ||    |   |  \n---------- ||  ---------- ||  ----------\n  |   |    ||    |   |    ||    |   |  \n"
-        let resultingMetaBoardDetailed = metaBoard.detailedDescription
-        let expectedMetaBoardOverview = "\n META BOARD Score Overview \nX |   |  \n----------\n  |   |  \n----------\n  |   |  \n"
-        let resultingMetaBoardOverview = metaBoard.overviewDescription
-        print(resultingMetaBoardDetailed)
-        print(resultingMetaBoardOverview)
-        XCTAssertEqual(resultingBoard, expectedBoard)
-        XCTAssertEqual(expectedMetaBoardDetailed, expectedMetaBoardDetailed)
-        XCTAssertEqual(expectedMetaBoardOverview, resultingMetaBoardOverview)
-    }
-    
-    func testPlaceMarker() {
+    func testUpdatePlaceSingleBoard() {
         var testBoard = boardWonByX
-        testBoard.placeMarker(.o, onPlace: Place(row: .middle, column: .middle))
-        let result = testBoard.places[Place(row: .middle, column: .middle)]
-        let expected = Marker.o
-        XCTAssertEqual(result, expected)
+        testBoard.updatePlace(Place(row: .middle, column: .middle) , with: .o)
+        let expected = testBoard.places[Place(row: .middle, column: .middle)]
+        let result = Marker.o
+        XCTAssertTrue(expected == result)
     }
     
-//    func testNextBoard() {
-//        var testMetaBoard = metaBoard
-//        testMetaBoard.currentBoardPlace = Place(row: .middle, column: .middle)
-//        let newBoard = testMetaBoard.places[testMetaBoard.currentBoardPlace!]!.placeMarker(.x, onPlace: Place(row: .top, column: .right))
-//        testMetaBoard.places[currentBoardPlace] = newBoard
-//        testMetaBoard.currentBoardPlace = newBoard.lastPlace
-//        testMetaBoard.nextBoard()!.placeMarker(.o, onPlace: Place(row: .middle, column: .middle))
-//        let result = testMetaBoard.nextBoard()
-//        let expected = testMetaBoard.places[Place(row: .middle, column: .middle)]
-//        XCTAssertEqual(result, expected)
-//    }
+    func testLastPlaySingleBoard() {
+        var testBoard = boardWonByX
+        testBoard.updatePlace(Place(row: .middle, column: .middle) , with: .o)
+        let result = testBoard.lastPlay!
+        let expected = (Place(row: .middle, column: .middle), Marker.o)
+        XCTAssertTrue(expected == result)
+    }
     
-    func testNextBoardIsAlreadyWon() {
-        var testMetaBoard = metaBoard
-        testMetaBoard.currentBoardPlace = Place(row: .middle, column: .middle)
-        testMetaBoard.places[testMetaBoard.currentBoardPlace!]!.placeMarker(.x, onPlace: Place(row: .top, column: .left))
-        let result = testMetaBoard.nextBoard()
+    func testAvailablePlacesSingleBoard() {
+        var testBoard = boardWonByX
+        testBoard.updatePlace(Place(row: .middle, column: .middle) , with: .o)
+        let result = testBoard.availablePlaces
+        let expected = [Place(row: .middle, column: .right), Place(row: .bottom, column: .middle)]
+        XCTAssertTrue(expected == result)
+    }
+    
+    func testOwnerXSingleBoard() {
+        let testBoard = boardWonByX
+        let result = testBoard.owner
+        let expected = Marker.x
+        XCTAssertTrue(expected == result)
+
+    }
+    
+    func testOwnerNoneSingleBoard() {
+        var testBoard = boardWonByX
+        testBoard.updatePlace(Place(row: .bottom, column: .left), with: .empty)
+        let result = testBoard.owner
         XCTAssertNil(result)
     }
     
-    func testMarkerAvailable() {
-        let x = Marker.x
-        let o = Marker.o
-        let empty = Marker.empty
-        XCTAssertTrue(empty.available)
-        XCTAssertTrue(!x.available)
-        XCTAssertTrue(!o.available)
+    func testOwnerDrawSingleBoard() {
+        var testBoard = boardWonByX
+        testBoard.updatePlace(Place(row: .middle, column: .middle), with: .x)
+        testBoard.updatePlace(Place(row: .middle, column: .right), with: .o)
+        testBoard.updatePlace(Place(row: .bottom, column: .left), with: .o)
+        testBoard.updatePlace(Place(row: .bottom, column: .middle), with: .x)
+        let result = testBoard.owner
+        let expected = Marker.empty
+        XCTAssertTrue(expected == result)
+    }
+    
+    func testOwnerOSingleBoard() {
+        var testBoard = boardWonByX
+        testBoard.updatePlace(Place(row: .middle, column: .middle), with: .o)
+        testBoard.updatePlace(Place(row: .bottom, column: .left), with: .empty)
+        testBoard.updatePlace(Place(row: .bottom, column: .middle), with: .o)
+        let result = testBoard.owner
+        let expected = Marker.o
+        XCTAssertTrue(expected == result)
+    }
+    
+    func testOwnerXMetaBoard() {
+        var testBoard = metaBoard
+        let testBoardWonByX = boardWonByX
+        testBoard.updatePlace(Place(row: .middle, column: .middle), with: testBoardWonByX)
+        testBoard.updatePlace(Place(row: .top, column: .middle), with: testBoardWonByX)
+        testBoard.updatePlace(Place(row: .bottom, column: .middle), with: testBoardWonByX)
+        let result = testBoard.owner
+        let expected = Marker.x
+        XCTAssertTrue(expected == result)
+        
+    }
+    
+    func testOwnerNoneMetaBoard() {
+        var testBoard = metaBoard
+        let testBoardWonByX = boardWonByX
+        testBoard.updatePlace(Place(row: .middle, column: .middle), with: testBoardWonByX)
+        testBoard.updatePlace(Place(row: .top, column: .middle), with: testBoardWonByX)
+        let result = testBoard.owner
+        XCTAssertNil(result)
+        
+    }
+    
+    
+    
 
     }
-}
