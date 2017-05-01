@@ -8,11 +8,17 @@
 
 import Foundation
 
-enum Marker: String {
+enum Marker: String, Ownable {
     case x = "X", o = "O", empty = " "
     
-    var available: Bool {
-        return self == .empty
+    var owner: Marker? {
+        return self
+    }
+}
+
+extension Marker {
+    init() {
+        self = .empty
     }
 }
 
@@ -24,33 +30,6 @@ enum Row: Int {
     case top = 4, middle = 5, bottom = 6
 }
 
-enum BoardStatus {
-    case winner(Marker), draw, inProgress
-    
-    static func ==(_ lhs: BoardStatus, _ rhs: BoardStatus) -> Bool {
-        switch (lhs, rhs) {
-        case (.winner(let x), .winner(let y)):
-            return x == y
-        case (.winner, _):
-            return false
-        case (.draw, .draw), (.inProgress, .inProgress):
-            return true
-        case (.draw, _), (.inProgress, _):
-            return false
-        }
-    }
-    
-    var description: String {
-        switch self {
-        case .winner(let x):
-            return x.rawValue
-        case .draw:
-            return "D"
-        case .inProgress:
-            return " "
-        }
-    }
-}
 
 struct Place: Hashable {
     let row: Row
@@ -86,5 +65,10 @@ struct Place: Hashable {
     static func ==(_ lhs: Place, _ rhs: Place) -> Bool {
         return lhs.row == rhs.row && lhs.column == rhs.column
     }
+}
+
+protocol Ownable {
+    var owner: Marker? { get }
+    init()
 }
 
